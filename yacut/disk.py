@@ -1,3 +1,5 @@
+"""Асинхронная загрузка файлов на Яндекс Диск."""
+
 import asyncio
 from uuid import uuid4
 
@@ -8,11 +10,13 @@ from yacut.exceptions import YandexDiskError
 
 
 def normalize_filename(filename):
+    """Очистить имя файла от пути и нулевых байтов."""
     normalized = filename.replace('\\', '/').rsplit('/', 1)[-1]
     return normalized.replace('\x00', '') or 'file'
 
 
 async def upload_file(session, filename, content):
+    """Загрузить один файл и вернуть ссылку для его скачивания."""
     disk_filename = normalize_filename(filename)
     disk_path = f'{YANDEX_DISK_DIRECTORY}/{uuid4().hex}_{disk_filename}'
 
@@ -44,6 +48,7 @@ async def upload_file(session, filename, content):
 
 
 async def upload_files(files, token):
+    """Параллельно загрузить несколько файлов на Яндекс Диск."""
     if not token:
         raise YandexDiskError('Не настроен токен доступа к Яндекс Диску.')
 

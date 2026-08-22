@@ -1,3 +1,5 @@
+"""Маршруты пользовательского веб-интерфейса YaCut."""
+
 from flask import (
     abort,
     current_app,
@@ -17,6 +19,7 @@ from yacut.services import create_url_map, get_url_map
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
+    """Показать форму и обработать создание короткой ссылки."""
     form = URLMapForm()
     short_link = None
     if form.validate_on_submit():
@@ -42,6 +45,7 @@ def index_view():
 
 @app.route('/files', methods=['GET', 'POST'])
 async def files_view():
+    """Показать форму и обработать загрузку файлов на Яндекс Диск."""
     form = FileUploadForm()
     uploaded_files = []
     if form.validate_on_submit():
@@ -71,6 +75,7 @@ async def files_view():
 
 @app.route('/<string:short_id>')
 def redirect_view(short_id):
+    """Перенаправить по исходному URL короткой ссылки."""
     url_map = get_url_map(short_id)
     if url_map is None:
         abort(404)

@@ -1,3 +1,5 @@
+"""Тесты страницы асинхронной загрузки файлов."""
+
 import asyncio
 from http import HTTPStatus
 from io import BytesIO
@@ -16,6 +18,7 @@ EXPECTED_API_CALLS = {
 
 
 def test_files_upload_page_available(client):
+    """Проверить доступность страницы загрузки файлов."""
     response = client.get(FILES_URL)
     assert response.status_code == HTTPStatus.OK, (
         'Убедитесь, что GET-запрос к странице загрузки файлов '
@@ -24,6 +27,7 @@ def test_files_upload_page_available(client):
 
 
 def test_files_upload_page_has_form(client):
+    """Проверить наличие формы загрузки файлов."""
     response = client.get(FILES_URL)
     assert b'form' in response.data, (
         'Убедитесь, что на странице загрузки файлов отображается форма.'
@@ -31,6 +35,7 @@ def test_files_upload_page_has_form(client):
 
 
 def test_files_upload_page_form_fields(client):
+    """Проверить поля и кнопку формы загрузки файлов."""
     response = client.get(FILES_URL)
     assert b'type="file"' in response.data, (
         'Убедитесь, что на странице загрузки файлов отображается поле '
@@ -43,6 +48,7 @@ def test_files_upload_page_form_fields(client):
 
 
 async def test_upload_files(client, mock_server, monkeypatch):
+    """Проверить загрузку файлов и создание коротких ссылок."""
     mock_server, user_calls = await mock_server
     await intercept_requests(mock_server, monkeypatch)
     png_bytes_1 = generate_png_bytes()
@@ -55,6 +61,7 @@ async def test_upload_files(client, mock_server, monkeypatch):
     }
 
     def sync_test():
+        """Выполнить синхронный запрос Flask в отдельном потоке."""
         response = client.post(FILES_URL, data=form_data)
         assert response.status_code == HTTPStatus.OK, (
             'Убедитесь, что при отправке корректно заполненной формы для '

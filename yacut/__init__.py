@@ -1,3 +1,5 @@
+"""Инициализация Flask-приложения, базы данных и расширений YaCut."""
+
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -29,6 +31,7 @@ from .models import URLMap  # noqa: E402
 
 @app.shell_context_processor
 def make_shell_context():
+    """Добавить объекты базы данных в контекст Flask Shell."""
     return {'db': db, 'URLMap': URLMap}
 
 

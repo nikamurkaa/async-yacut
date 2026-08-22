@@ -1,9 +1,13 @@
+"""Модели базы данных сервиса YaCut."""
+
 from datetime import datetime, timezone
 
 from yacut import db
 
 
 class URLMap(db.Model):
+    """Связь исходного URL с коротким идентификатором."""
+
     id = db.Column(db.Integer, primary_key=True)
     original = db.Column(db.Text, nullable=False)
     short = db.Column(

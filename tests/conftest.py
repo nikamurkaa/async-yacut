@@ -1,3 +1,5 @@
+"""Общие фикстуры и тестовые данные проекта YaCut."""
+
 import os
 import sys
 from pathlib import Path
@@ -50,17 +52,20 @@ assert app.config['SQLALCHEMY_DATABASE_URI'] == _tmp_db_uri, (
 
 @pytest.fixture
 def user_environment():
+    """Вернуть исходные переменные окружения пользователя."""
     return _user_environment
 
 
 @pytest.fixture
 def default_app():
+    """Предоставить приложение с настройками по умолчанию."""
     with app.app_context():
         yield app
 
 
 @pytest.fixture
 def _app():
+    """Подготовить тестовое приложение и временную базу данных."""
     app.config.update({
         'TESTING': True,
         'WTF_CSRF_ENABLED': False,
@@ -74,16 +79,19 @@ def _app():
 
 @pytest.fixture
 def client(_app):
+    """Вернуть тестовый HTTP-клиент Flask."""
     return _app.test_client()
 
 
 @pytest.fixture
 def cli_runner():
+    """Вернуть средство запуска команд Flask CLI."""
     return app.test_cli_runner()
 
 
 @pytest.fixture
 def short_python_url():
+    """Создать тестовую короткую ссылку на сайт Python."""
     url_map_object = URLMap(original='https://www.python.org', short='py')
     db.session.add(url_map_object)
     db.session.commit()
@@ -92,15 +100,12 @@ def short_python_url():
 
 @pytest.fixture(scope='session')
 def duplicated_custom_id_msg():
+    """Вернуть ожидаемое сообщение о занятом идентификаторе."""
     return 'Предложенный вариант короткой ссылки уже существует.'
 
 
 def generate_png_bytes():
-    """
-    Генерирует PNG-файл в 1 пиксель случайного цвета в байтовом представлении.
-
-    Возвращает байтовое представление файла.
-    """
+    """Сформировать однопиксельное PNG-изображение в байтах."""
     colors = [
         (255, 0, 0),
         (0, 255, 0),

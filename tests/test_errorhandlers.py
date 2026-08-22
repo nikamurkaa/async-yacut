@@ -1,7 +1,10 @@
+"""Тесты пользовательских обработчиков ошибок."""
+
 from http import HTTPStatus
 
 
 def test_404(client):
+    """Проверить собственную страницу ошибки 404."""
     response = client.get('/unexpected')
     assert response.status_code == HTTPStatus.NOT_FOUND, (
         'При обращении к несуществующей странице должна вернуться ошибка 404.'

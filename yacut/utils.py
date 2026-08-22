@@ -1,3 +1,5 @@
+"""Вспомогательные функции для генерации коротких ссылок."""
+
 from random import choices
 
 from sqlalchemy import select
@@ -8,6 +10,7 @@ from yacut.models import URLMap
 
 
 def get_unique_short_id(length=SHORT_ID_LENGTH, reserved=None):
+    """Сгенерировать свободный короткий идентификатор заданной длины."""
     reserved = reserved or set()
     while True:
         short_id = ''.join(choices(SHORT_ID_ALPHABET, k=length))

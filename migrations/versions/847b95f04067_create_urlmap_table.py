@@ -1,8 +1,8 @@
-"""create URLMap table
+"""Создание таблицы URLMap.
 
-Revision ID: 847b95f04067
-Revises:
-Create Date: 2026-08-21 20:17:42.609113
+Идентификатор ревизии: 847b95f04067
+Предыдущая ревизия отсутствует.
+Дата создания: 2026-08-21 20:17:42.609113
 
 """
 from alembic import op
@@ -17,6 +17,7 @@ depends_on = None
 
 
 def upgrade():
+    """Создать таблицу коротких ссылок и её индексы."""
     op.create_table(
         'url_map',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -39,6 +40,7 @@ def upgrade():
 
 
 def downgrade():
+    """Удалить таблицу коротких ссылок и её индексы."""
     with op.batch_alter_table('url_map', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_url_map_timestamp'))
         batch_op.drop_index(batch_op.f('ix_url_map_short'))

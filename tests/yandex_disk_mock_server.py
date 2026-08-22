@@ -1,3 +1,5 @@
+"""Мок-сервер API Яндекс Диска для тестирования загрузки файлов."""
+
 import aiohttp
 import re
 from contextlib import suppress
@@ -29,12 +31,14 @@ async def mock_server(aiohttp_server):
     file_names = {}
 
     async def check_headers(path, headers):
+        """Проверить наличие заголовка авторизации в запросе."""
         assert 'Authorization' in headers, (
             'Убедитесь, что в запросе к эндпоинту Яндекс Диска '
             f'`{path}` передаётся заголовок `Authorization` с токеном доступа.'
         )
 
     async def handle_fields_param(request, response_data):
+        """Оставить в ответе поля, запрошенные параметром fields."""
         fields_query_param = request.query.get('fields')
         if fields_query_param:
             keys_to_remove = (
@@ -148,6 +152,7 @@ async def mock_server(aiohttp_server):
 async def intercept_requests(mock_server, monkeypatch):
     """Перехватывает запросы к API Я.Диска, используя мок-сервер."""
     def substitute_host(url):
+        """Заменить адрес Яндекс Диска адресом мок-сервера."""
         if 'yandex' in url:
             pattern = r'^(https?:\/\/)([^\/]+)'
             replacement = rf'http://{mock_server.host}:{mock_server.port}'
@@ -155,7 +160,10 @@ async def intercept_requests(mock_server, monkeypatch):
         return url
 
     def request_decorator(func):
+        """Создать декоратор для перенаправления тестовых запросов."""
+
         def wrapper(*args, **kwargs):
+            """Подменить адрес и вызвать исходную функцию запроса."""
             if len(args) > 1:
                 args[1] = substitute_host(args[1])
             else:
@@ -164,8 +172,10 @@ async def intercept_requests(mock_server, monkeypatch):
         return wrapper
 
     class InterceptedClientSession(aiohttp.ClientSession):
+        """HTTP-сессия с перенаправлением запросов на мок-сервер."""
 
         async def _request(self, method, url, *args, **kwargs):
+            """Отправить запрос на адрес тестового сервера."""
             url = substitute_host(url)
             return await super()._request(method, url, *args, **kwargs)
 

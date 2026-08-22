@@ -1,3 +1,5 @@
+"""Дополнительные тесты публичного контракта YaCut."""
+
 import re
 from http import HTTPStatus
 
@@ -5,6 +7,7 @@ from tests.conftest import PY_URL
 
 
 def test_files_short_id_is_reserved_in_api(client):
+    """Проверить запрет идентификатора files через API."""
     response = client.post('/api/id/', json={
         'url': PY_URL,
         'custom_id': 'files',
@@ -20,6 +23,7 @@ def test_get_api_accepts_url_without_trailing_slash(
     client,
     short_python_url,
 ):
+    """Проверить API-запрос без завершающей косой черты."""
     response = client.get(f'/api/id/{short_python_url.short}')
 
     assert response.status_code == HTTPStatus.OK
@@ -27,6 +31,7 @@ def test_get_api_accepts_url_without_trailing_slash(
 
 
 def test_generated_short_link_is_ascii_alphanumeric(client):
+    """Проверить формат автоматически созданного идентификатора."""
     response = client.post('/api/id/', json={'url': PY_URL})
     short_id = response.json['short_link'].rsplit('/', 1)[-1]
 
@@ -34,6 +39,7 @@ def test_generated_short_link_is_ascii_alphanumeric(client):
 
 
 def test_proxy_headers_are_used_for_external_url(client):
+    """Проверить построение внешнего URL с учётом прокси-заголовков."""
     response = client.post(
         '/api/id/',
         json={'url': PY_URL},

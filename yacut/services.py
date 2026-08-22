@@ -1,3 +1,5 @@
+"""Сервисные функции для работы с короткими ссылками."""
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
@@ -9,12 +11,14 @@ from yacut.utils import get_unique_short_id
 
 
 def short_id_exists(short_id):
+    """Проверить наличие короткого идентификатора в базе данных."""
     return db.session.scalar(
         select(URLMap.id).where(URLMap.short == short_id)
     ) is not None
 
 
 def create_url_map(original, custom_id=None):
+    """Создать и сохранить связь исходного URL с коротким адресом."""
     if custom_id and (
         custom_id in RESERVED_SHORT_IDS or short_id_exists(custom_id)
     ):
@@ -35,6 +39,7 @@ def create_url_map(original, custom_id=None):
 
 
 def get_url_map(short_id):
+    """Получить запись по короткому идентификатору."""
     return db.session.scalar(
         select(URLMap).where(URLMap.short == short_id)
     )

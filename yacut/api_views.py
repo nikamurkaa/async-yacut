@@ -1,3 +1,5 @@
+"""Эндпоинты API для создания и получения коротких ссылок."""
+
 import re
 from http import HTTPStatus
 
@@ -16,6 +18,7 @@ from yacut.services import create_url_map, get_url_map
 
 
 def validate_custom_id(custom_id):
+    """Проверить пользовательский короткий идентификатор."""
     if custom_id in (None, ''):
         return None
     if (
@@ -31,6 +34,7 @@ def validate_custom_id(custom_id):
 
 @app.route('/api/id/', methods=['POST'])
 def create_short_link():
+    """Создать короткую ссылку из данных POST-запроса."""
     data = request.get_json(silent=True)
     if data is None:
         raise InvalidAPIUsage('Отсутствует тело запроса')
@@ -54,6 +58,7 @@ def create_short_link():
 
 @app.route('/api/id/<string:short_id>/', strict_slashes=False)
 def get_original_link(short_id):
+    """Вернуть исходный URL по короткому идентификатору."""
     url_map = get_url_map(short_id)
     if url_map is None:
         raise InvalidAPIUsage(

@@ -1,3 +1,5 @@
+"""Константы для коротких ссылок и работы с Яндекс Диском."""
+
 from string import ascii_letters, digits
 
 
