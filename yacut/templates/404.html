@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Страница не найдена — YaCut{% endblock %}
+{% block content %}
+  <div class="text-center">
+    <h1>404</h1>
+    <p>Такой страницы нет.</p>
+    <a href="{{ url_for('index_view') }}">Вернуться на главную</a>
+  </div>
+{% endblock %}

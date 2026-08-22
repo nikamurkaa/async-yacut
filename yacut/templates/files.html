@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}YaCut — загрузка файлов{% endblock %}
+{% block content %}
+  <section>
+    <h1 class="text-center">Загрузка файлов</h1>
+    <p class="text-center my-4">
+      Выберите несколько файлов, чтобы загрузить их на Яндекс Диск.
+    </p>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {{ form.hidden_tag() }}
+          {{ form.files(class="form-control mb-2", multiple=true) }}
+          {% for error in form.files.errors %}
+            <p class="text-danger">{{ error }}</p>
+          {% endfor %}
+          {{ form.submit(class="btn btn-primary") }}
+        </form>
+      </div>
+    </div>
+    {% if uploaded_files %}
+      <div class="table-responsive mt-4">
+        <table class="table table-striped">
+          <thead>
+            <tr><th>Имя файла</th><th>Ссылка для скачивания</th></tr>
+          </thead>
+          <tbody>
+            {% for file in uploaded_files %}
+              <tr>
+                <td>{{ file.filename }}</td>
+                <td><a href="{{ file.short_link }}">{{ file.short_link }}</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

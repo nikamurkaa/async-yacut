@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Ошибка сервера — YaCut{% endblock %}
+{% block content %}
+  <div class="text-center">
+    <h1>500</h1>
+    <p>На сервере произошла ошибка. Попробуйте ещё раз позднее.</p>
+    <a href="{{ url_for('index_view') }}">Вернуться на главную</a>
+  </div>
+{% endblock %}

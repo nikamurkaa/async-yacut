@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.venv
+venv
+env
+instance
+__pycache__
+*.py[cod]
+.pytest_cache
+.coverage
+tests
+postman_collection
