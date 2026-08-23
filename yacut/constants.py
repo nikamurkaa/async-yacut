@@ -7,7 +7,8 @@ SHORT_ID_ALPHABET = ascii_letters + digits
 SHORT_ID_LENGTH = 6
 CUSTOM_ID_MAX_LENGTH = 16
 CUSTOM_ID_PATTERN = r'^[A-Za-z0-9]+$'
-RESERVED_SHORT_IDS = frozenset({'files'})
+FILES_PREFIX = 'files'
+RESERVED_SHORT_IDS = (FILES_PREFIX,)
 
 DUPLICATED_SHORT_ID_MESSAGE = (
     'Предложенный вариант короткой ссылки уже существует.'
