@@ -42,19 +42,21 @@ class URLMap(db.Model):
                 SHORT_ID_ALPHABET,
                 k=SHORT_ID_LENGTH,
             ))
-            if (
-                short_id not in RESERVED_SHORT_IDS
-                and URLMap.query.filter_by(short=short_id).first() is None
-            ):
+            if URLMap.is_short_id_available(short_id):
                 return short_id
+
+    @staticmethod
+    def is_short_id_available(short_id):
+        """Проверить доступность короткого имени."""
+        return (
+            short_id not in RESERVED_SHORT_IDS
+            and URLMap.get(short_id) is None
+        )
 
     @staticmethod
     def create(original, custom_id=None):
         """Создать и сохранить новую короткую ссылку."""
-        if custom_id and (
-            custom_id in RESERVED_SHORT_IDS
-            or URLMap.query.filter_by(short=custom_id).first() is not None
-        ):
+        if custom_id and not URLMap.is_short_id_available(custom_id):
             raise ShortIDAlreadyExistsError
 
         url_map = URLMap(
@@ -71,7 +73,7 @@ class URLMap(db.Model):
 
     @staticmethod
     def get(short_id):
-        """Получить запись по короткому идентификатору."""
+        """Получить запись по короткому имени."""
         return URLMap.query.filter_by(short=short_id).first()
 
     def to_dict(self):

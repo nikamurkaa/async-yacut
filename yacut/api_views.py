@@ -24,7 +24,6 @@ def validate_custom_id(custom_id):
         or re.fullmatch(CUSTOM_ID_PATTERN, custom_id) is None
     ):
         raise InvalidAPIUsage(INVALID_SHORT_ID_MESSAGE)
-    return custom_id
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -36,7 +35,8 @@ def create_short_link():
     if not isinstance(data, dict) or 'url' not in data:
         raise InvalidAPIUsage('"url" является обязательным полем!')
 
-    custom_id = validate_custom_id(data.get('custom_id'))
+    custom_id = data.get('custom_id')
+    validate_custom_id(custom_id)
     try:
         url_map = URLMap.create(data['url'], custom_id)
     except ShortIDAlreadyExistsError:

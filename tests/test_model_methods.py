@@ -26,6 +26,7 @@ def test_reserved_short_id_is_rejected(_app):
     """Проверить отклонение зарезервированного идентификатора."""
     assert isinstance(RESERVED_SHORT_IDS, tuple)
     assert FILES_PREFIX in RESERVED_SHORT_IDS
+    assert not URLMap.is_short_id_available(FILES_PREFIX)
 
     with pytest.raises(ShortIDAlreadyExistsError):
         URLMap.create(PY_URL, FILES_PREFIX)
@@ -42,6 +43,8 @@ def test_unique_short_id_skips_existing_value(_app, monkeypatch):
 
     monkeypatch.setattr('yacut.models.choices', generate_value)
 
+    assert not URLMap.is_short_id_available('AAAAAA')
+    assert URLMap.is_short_id_available('BBBBBB')
     assert URLMap.get_unique_short_id() == 'BBBBBB'
 
 
