@@ -5,7 +5,11 @@ from sqlalchemy.exc import IntegrityError
 
 from tests.conftest import PY_URL, TEST_BASE_URL
 from yacut import db
-from yacut.constants import FILES_PREFIX, RESERVED_SHORT_IDS
+from yacut.constants import (
+    DUPLICATED_SHORT_ID_MESSAGE,
+    FILES_PREFIX,
+    RESERVED_SHORT_IDS,
+)
 from yacut.exceptions import ShortIDAlreadyExistsError
 from yacut.models import URLMap
 
@@ -14,7 +18,7 @@ def test_create_get_and_to_dict(_app):
     """Проверить создание, поиск и представление записи в словаре."""
     url_map = URLMap.create(PY_URL, 'python')
 
-    assert URLMap.get('python') == url_map
+    assert URLMap.get_by_short_id('python') == url_map
     with _app.test_request_context('/', base_url=TEST_BASE_URL):
         assert url_map.to_dict() == {
             'url': PY_URL,
@@ -28,8 +32,10 @@ def test_reserved_short_id_is_rejected(_app):
     assert FILES_PREFIX in RESERVED_SHORT_IDS
     assert not URLMap.is_short_id_available(FILES_PREFIX)
 
-    with pytest.raises(ShortIDAlreadyExistsError):
+    with pytest.raises(ShortIDAlreadyExistsError) as error_info:
         URLMap.create(PY_URL, FILES_PREFIX)
+
+    assert str(error_info.value) == DUPLICATED_SHORT_ID_MESSAGE
 
 
 def test_unique_short_id_skips_existing_value(_app, monkeypatch):
@@ -84,7 +90,8 @@ def test_create_rolls_back_after_integrity_error(_app, monkeypatch):
     monkeypatch.setattr(db.session, 'commit', failed_commit)
     monkeypatch.setattr(db.session, 'rollback', tracked_rollback)
 
-    with pytest.raises(ShortIDAlreadyExistsError):
+    with pytest.raises(ShortIDAlreadyExistsError) as error_info:
         URLMap.create(PY_URL, 'conflict')
 
+    assert str(error_info.value) == DUPLICATED_SHORT_ID_MESSAGE
     assert rollback_calls == 1
