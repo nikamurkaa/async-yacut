@@ -9,7 +9,6 @@ from yacut import app
 from yacut.constants import (
     CUSTOM_ID_MAX_LENGTH,
     CUSTOM_ID_PATTERN,
-    DUPLICATED_SHORT_ID_MESSAGE,
     INVALID_SHORT_ID_MESSAGE,
 )
 from yacut.exceptions import InvalidAPIUsage, ShortIDAlreadyExistsError
@@ -39,15 +38,15 @@ def create_short_link():
     validate_custom_id(custom_id)
     try:
         url_map = URLMap.create(data['url'], custom_id)
-    except ShortIDAlreadyExistsError:
-        raise InvalidAPIUsage(DUPLICATED_SHORT_ID_MESSAGE)
+    except ShortIDAlreadyExistsError as error:
+        raise InvalidAPIUsage(str(error)) from error
     return jsonify(url_map.to_dict()), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short_id>/', strict_slashes=False)
 def get_original_link(short_id):
     """Вернуть исходный URL по короткому идентификатору."""
-    url_map = URLMap.get(short_id)
+    url_map = URLMap.get_by_short_id(short_id)
     if url_map is None:
         raise InvalidAPIUsage(
             'Указанный id не найден',
