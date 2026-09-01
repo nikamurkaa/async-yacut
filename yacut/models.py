@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from yacut import db
 from yacut.constants import (
     CUSTOM_ID_MAX_LENGTH,
+    DUPLICATED_SHORT_ID_MESSAGE,
     RESERVED_SHORT_IDS,
     SHORT_ID_ALPHABET,
     SHORT_ID_LENGTH,
@@ -50,14 +51,14 @@ class URLMap(db.Model):
         """Проверить доступность короткого имени."""
         return (
             short_id not in RESERVED_SHORT_IDS
-            and URLMap.get(short_id) is None
+            and URLMap.get_by_short_id(short_id) is None
         )
 
     @staticmethod
     def create(original, custom_id=None):
         """Создать и сохранить новую короткую ссылку."""
         if custom_id and not URLMap.is_short_id_available(custom_id):
-            raise ShortIDAlreadyExistsError
+            raise ShortIDAlreadyExistsError(DUPLICATED_SHORT_ID_MESSAGE)
 
         url_map = URLMap(
             original=original,
@@ -68,12 +69,14 @@ class URLMap(db.Model):
             db.session.commit()
         except IntegrityError as error:
             db.session.rollback()
-            raise ShortIDAlreadyExistsError from error
+            raise ShortIDAlreadyExistsError(
+                DUPLICATED_SHORT_ID_MESSAGE
+            ) from error
         return url_map
 
     @staticmethod
-    def get(short_id):
-        """Получить запись по короткому имени."""
+    def get_by_short_id(short_id):
+        """Получить запись по короткому идентификатору."""
         return URLMap.query.filter_by(short=short_id).first()
 
     def to_dict(self):
