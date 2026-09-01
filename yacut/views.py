@@ -8,7 +8,7 @@ from flask import (
 )
 
 from yacut import app
-from yacut.constants import DUPLICATED_SHORT_ID_MESSAGE, FILES_PREFIX
+from yacut.constants import FILES_PREFIX
 from yacut.disk import upload_files
 from yacut.exceptions import ShortIDAlreadyExistsError, YandexDiskError
 from yacut.forms import FileUploadForm, URLMapForm
@@ -31,8 +31,8 @@ def index_view():
             form.original_link.data,
             form.custom_id.data,
         )
-    except ShortIDAlreadyExistsError:
-        flash(DUPLICATED_SHORT_ID_MESSAGE, 'error')
+    except ShortIDAlreadyExistsError as error:
+        flash(str(error), 'error')
         short_link = None
     else:
         short_link = url_map.to_dict()['short_link']
@@ -66,8 +66,8 @@ async def files_view():
                 'filename': filename,
                 'short_link': url_map.to_dict()['short_link'],
             })
-    except ShortIDAlreadyExistsError:
-        flash(DUPLICATED_SHORT_ID_MESSAGE, 'error')
+    except ShortIDAlreadyExistsError as error:
+        flash(str(error), 'error')
     except YandexDiskError as error:
         flash(str(error), 'error')
     return render_template(
